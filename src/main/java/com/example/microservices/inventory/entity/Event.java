@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -16,6 +18,11 @@ public class Event {
 
     @Id
     private Long id;
+
+    public void setLeftCapacity(Long leftCapacity) {
+        this.leftCapacity = leftCapacity;
+    }
+
     @Column(name = "name")
     private String name;
     @Column(name = "total_capacity")
@@ -25,6 +32,14 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "venue_id")
     private Venue venue;
+
+
+    @Column(name="ticket_price")
+    private BigDecimal ticketPrice;
+
+    public BigDecimal getTicketPrice() {
+        return ticketPrice;
+    }
 
     public Long getId() {
         return id;

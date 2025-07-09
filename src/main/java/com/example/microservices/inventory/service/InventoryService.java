@@ -7,12 +7,14 @@ import com.example.microservices.inventory.repository.EventRepository;
 import com.example.microservices.inventory.repository.VenueRepository;
 import com.example.microservices.inventory.response.EventInventoryResponse;
 import com.example.microservices.inventory.response.VenueInventoryResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class InventoryService {
 
@@ -27,8 +29,6 @@ public class InventoryService {
     public List<EventInventoryResponse> getAllEvents(){
 
         final List<Event> events = eventRepository.findAll();
-
-
         return events.stream().map(event -> EventInventoryResponse.builder()
                 .event(event.getName())
                 .capacity(event.getLeftCapacity())
@@ -46,4 +46,30 @@ public class InventoryService {
                 totalCapacity(venue.getTotalCapacity()).
                 build();
     }
+
+    public EventInventoryResponse getEventInventory(final Long eventId){
+
+        final  Event event = eventRepository.findById(eventId).orElse(null);
+        return EventInventoryResponse.builder()
+                .event(event.getName())
+                .ticketPrice(event.getTicketPrice())
+                .capacity(event.getLeftCapacity())
+                .eventId(event.getId())
+                .venue(event.getVenue())
+                .build();
+    }
+
+    public void updateEventCapacity(final Long eventId,final  Long ticketsBooked){
+
+        final Event event = eventRepository.findById(eventId).orElse(null);
+
+        event.setLeftCapacity(event.getLeftCapacity()-ticketsBooked);
+
+        eventRepository.saveAndFlush(event);
+        //log.info("Updated event capacity for event id: {} with tickets booked: {} " , eventId, ticketsBooked);
+
+        System.out.println("Updated event capacity for event id: {} with tickets booked: {} " + eventId + ticketsBooked);
+    }
+
+
 }
